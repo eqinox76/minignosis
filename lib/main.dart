@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 void main() => runApp(MyApp());
+
+var log = Logger();
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -46,7 +49,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   Icon searchIcon = new Icon(Icons.search);
-  Widget appBarTitle = new Text('');
 
   void _incrementCounter() {
     setState(() {
@@ -59,22 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _searchButtonPressed() {
-    setState(() {
-      if (this.searchIcon.icon == Icons.search) {
-        // we are coming from the default mode
-        this.searchIcon = Icon(Icons.close);
-        this.appBarTitle = new TextField(
-            decoration: new InputDecoration(
-                hintText: "search ..."
-            )
-        );
-      } else {
-        // we were in the searching state
-        this.searchIcon = Icon(Icons.search);
-        this.appBarTitle = Text("Home");
-      }
-    });
+  void _searched(String search) {
+    log.i(search);
   }
 
   @override
@@ -89,11 +77,11 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: appBarTitle,
-        leading: IconButton(
-            icon: searchIcon,
-            onPressed: _searchButtonPressed
-        ),
+        title: new TextField(
+          // thros assertion: "RenderBox was not laid out: RenderEditable#2f35b NEEDS-LAYOUT NEEDS-PAINT"
+            //autofocus: true,
+            decoration: new InputDecoration(hintText: " search ..."), onSubmitted: _searched,),
+        leading: searchIcon,
         actions: <Widget>[
           IconButton(icon: Icon(Icons.search), tooltip: 'Search'),
         ],
@@ -123,10 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .display1,
+              style: Theme.of(context).textTheme.display1,
             ),
           ],
         ),
