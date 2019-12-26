@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-
-void main() => runApp(MyApp());
+import 'package:mini_gnosis/login.dart';
 
 var log = Logger();
+
+
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: Home(),
+      home: LoginScreen(),
     );
   }
 }
