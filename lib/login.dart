@@ -3,17 +3,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
+import 'package:mini_gnosis/config.dart';
 
 import 'main.dart';
 
 // https://github.com/FirebaseExtended/flutterfire/tree/master/packages/firebase_auth/firebase_auth
 // https://medium.com/flutter-community/flutter-implementing-google-sign-in-71888bca24ed
-final GoogleSignIn _googleSignIn = GoogleSignIn();
+final GoogleSignIn _googleSignIn = GoogleSignIn(
+  clientId:
+      '421510786679-puvuab9081e0l87cbobmfcakmj1nrkut.apps.googleusercontent.com',
+);
 final FirebaseAuth _auth = FirebaseAuth.instance;
 var log = Logger();
 
-Future<String> signInWithGoogle() async {
-  print('starting login');
+Future<String> signInWithGoogle(BuildContext context) async {
+
+  if (Config.of(context).skipLogin) {
+    log.w('DEVELOPMENT BUILD skipping login.');
+    return 'devlopmentuser';
+  }
+
   final GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
   print('signed in google');
   final GoogleSignInAuthentication googleSignInAuthentication =
@@ -54,16 +63,16 @@ class LoginScreen extends StatelessWidget {
           child: RaisedButton(
             child: Text('Login'),
             onPressed: () {
-              signInWithGoogle().then((name) {
+              signInWithGoogle(context).then((name) {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => Home()),
                 );
               }).catchError((err) {
-                log.e(err);
+                log.e('could not log in:', err);
                 Scaffold.of(context).showSnackBar(SnackBar(
                   backgroundColor: Colors.amber,
                   content: Text(
-                    err.toString(),
+                    'Could not log in:' + err.toString(),
                     style: TextStyle(color: Colors.black),
                   ),
                   duration: Duration(seconds: 30),
