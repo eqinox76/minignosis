@@ -1,0 +1,35 @@
+{
+  "name": "minignosis",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "source-map-loader": "^0.2.4",
+    "ts-loader": "^6.2.2",
+    "tslib": "^1.11.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.32",
+    "@types/react-dom": "^16.9.6",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "serve": "tsc -p . -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eqinox76/minignosis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eqinox76/minignosis/issues"
+  },
+  "homepage": "https://github.com/eqinox76/minignosis#readme"
+}

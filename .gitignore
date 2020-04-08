@@ -15,4 +15,9 @@
 *.iws
 .idea/
 
+# npm
+/node_modules/
 
+# packaged by webpack
+/dist/*.js
+/dist/*.js.map
