@@ -1,1 +1,3 @@
-const App = () => <div>Hello React App from scratch</div>;
+import * as React from "react"
+
+export const App = () => <h1>Hello React App from scratch</h1>;
