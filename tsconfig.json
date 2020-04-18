@@ -1,15 +1,24 @@
 {
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
         "esModuleInterop": true,
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "module": "es6",
+        "jsx": "react",
         "lib": [
             "dom",
-            "es2017"
+            "es6"
         ],
+        "module": "es6",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "sourceMap": true,
         "target": "es6",
-        "jsx": "react"
-    }
+        "types": [
+            "@material-ui/core"
+        ]
+    },
+    "exclude": [
+        "./node_modules"
+    ]
 }
