@@ -2,7 +2,8 @@ import * as React from "react"
 import { AppBar, IconButton, Toolbar } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import { ResultViewer } from './ResultViewer'
+import { ResultViewer } from './ResultViewer';
+import { InputForm } from './InputForm';
 import firebase from "firebase";
 
 function logout() {
@@ -47,6 +48,7 @@ export function App() {
       {getAppBar()}
 
       {/*https://github.com/bvaughn/react-window#can-i-lazy-load-data-for-my-list*/}
+      <InputForm/>
       <ResultViewer/>
     </div>);
 }
