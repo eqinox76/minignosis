@@ -1,23 +1,9 @@
 import * as React from "react"
-import { AppBar, Button, IconButton, List, ListItem, ListItemText, Toolbar } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { AppBar, IconButton, Toolbar } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import { ResultViewer } from './ResultViewer'
 import firebase from "firebase";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    menuButton: {
-      marginRight: theme.spacing(2),
-    },
-    title: {
-      flexGrow: 1,
-    },
-  }),
-);
 
 function logout() {
   firebase.auth().signOut().then(function () {
@@ -25,6 +11,22 @@ function logout() {
   }, function (error) {
     console.log(error);
   });
+}
+
+function getAppBar() {
+  return <AppBar position="static">
+    <Toolbar>
+      <IconButton edge="start" color="inherit" aria-label="menu">
+        <MenuIcon/>
+      </IconButton>
+      <div style={{flexGrow: 1}}>
+        MiniGnosis
+      </div>
+      <IconButton color="inherit" aria-label="sign out" onClick={logout}>
+        <PersonOutlineIcon/>
+      </IconButton>
+    </Toolbar>
+  </AppBar>;
 }
 
 export function App() {
@@ -39,32 +41,12 @@ export function App() {
     }
   });
 
-  const classes = useStyles();
+
   return (
     <div>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu">
-            <MenuIcon/>
-          </IconButton>
-          <div className={classes.title}>
-            MiniGnosis
-          </div>
-          <IconButton color="inherit" aria-label="sign out" onClick={logout}>
-            <PersonOutlineIcon/>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Button variant="contained" color="primary">
-        Hello World!!
-      </Button>
-      <List component="nav" aria-label="secondary mailbox folders">
-        <ListItem button>
-          <ListItemText primary="Trash"/>
-        </ListItem>
-        <ListItem>
-          <ListItemText primary="Spam"/>
-        </ListItem>
-      </List>
+      {getAppBar()}
+
+      {/*https://github.com/bvaughn/react-window#can-i-lazy-load-data-for-my-list*/}
+      <ResultViewer/>
     </div>);
 }
