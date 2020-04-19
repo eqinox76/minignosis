@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { List, ListItem, ListItemText } from "@material-ui/core";
+import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
 import firebase, { firestore } from "firebase";
 
 class ResultViewerState {
@@ -35,7 +36,13 @@ export class ResultViewer extends Component<{}, ResultViewerState> {
         {this.state.entries.map(function (ref: firestore.QueryDocumentSnapshot) {
           return (
             <ListItem button key={ref.id}>
-              <ListItemText primary={<a href={ref.get("url")}>{ref.get("url")}</a>}/>
+              <ListItemText primary={
+                <div>
+                  {ref.get("url")}
+
+                </div>
+              }/>
+              <a href={ref.get("url")}><LinkOutlinedIcon/></a>
             </ListItem>
           );
         })}
