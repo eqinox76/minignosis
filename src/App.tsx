@@ -3,8 +3,10 @@ import { AppBar, IconButton, TextField, Toolbar } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import { ResultViewer } from './ResultViewer';
-import { InputForm } from './InputForm';
+import { AddField } from './AddField';
+import AddScreen from './AddScreen';
 import firebase from "firebase";
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 function logout() {
   firebase.auth().signOut().then(function () {
@@ -21,7 +23,7 @@ function getAppBar() {
         <MenuIcon/>
       </IconButton>
       <TextField id="outlined-basic" label="Search" variant="outlined"/>
-      <InputForm/>
+      <AddField/>
       <div style={{flexGrow: 1}}/>
       <IconButton color="inherit" aria-label="sign out" onClick={logout}>
         <PersonOutlineIcon/>
@@ -44,11 +46,18 @@ export function App() {
 
 
   return (
-    <div>
-      {getAppBar()}
+    <Router>
+      <Switch>
+        <Route path="/add/:url" component={AddScreen}/>
+        <Route path="/">
+          <div>
+            {getAppBar()}
 
-      {/*https://github.com/bvaughn/react-window#can-i-lazy-load-data-for-my-list*/}
+            {/*https://github.com/bvaughn/react-window#can-i-lazy-load-data-for-my-list*/}
 
-      <ResultViewer/>
-    </div>);
+            <ResultViewer/>
+          </div>
+        </Route>
+      </Switch>
+    </Router>);
 }

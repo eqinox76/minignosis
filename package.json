@@ -6,9 +6,11 @@
   "dependencies": {
     "@material-ui/core": "^4.9.9",
     "@material-ui/icons": "^4.9.1",
+    "@types/react-router-dom": "^5.1.4",
     "firebase": "^7.14.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-router-dom": "^5.1.2",
     "source-map-loader": "^0.2.4",
     "tslib": "^1.11.1"
   },

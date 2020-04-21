@@ -37,6 +37,10 @@ module.exports = {
         "react": "React",
         "react-dom": "ReactDOM",
         "firebase": "firebase"
+    },
+    output: {
+        publicPath: '/',
+        filename: 'main.js',
     }
 };
 

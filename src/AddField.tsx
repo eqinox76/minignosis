@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import { Grid, IconButton, TextField } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 
-
-export class InputForm extends Component {
+export class AddField extends Component {
   private urlField: string;
 
   constructor(props: any) {
