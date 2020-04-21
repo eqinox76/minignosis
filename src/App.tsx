@@ -1,5 +1,5 @@
 import * as React from "react"
-import { AppBar, IconButton, Toolbar } from "@material-ui/core";
+import { AppBar, IconButton, TextField, Toolbar } from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import { ResultViewer } from './ResultViewer';
@@ -20,9 +20,9 @@ function getAppBar() {
       <IconButton edge="start" color="inherit" aria-label="menu">
         <MenuIcon/>
       </IconButton>
-      <div style={{flexGrow: 1}}>
-        MiniGnosis
-      </div>
+      <TextField id="outlined-basic" label="Search" variant="outlined"/>
+      <InputForm/>
+      <div style={{flexGrow: 1}}/>
       <IconButton color="inherit" aria-label="sign out" onClick={logout}>
         <PersonOutlineIcon/>
       </IconButton>
@@ -48,7 +48,7 @@ export function App() {
       {getAppBar()}
 
       {/*https://github.com/bvaughn/react-window#can-i-lazy-load-data-for-my-list*/}
-      <InputForm/>
+
       <ResultViewer/>
     </div>);
 }

@@ -1,49 +1,51 @@
 import React, { Component } from "react";
-import { Fab, Grid, IconButton, TextField } from "@material-ui/core";
+import { Grid, IconButton, TextField } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 
-class InputFormState {
-  active: boolean
-}
 
+export class InputForm extends Component {
+  private urlField: string;
 
-export class InputForm extends Component<{}, InputFormState> {
-  render() {
-    if (this.state === null || !this.state.active) {
-      return (
-        <Fab color="secondary" aria-label="edit" onClick={() => {
-          this.setState({active: true})
-        }}>
-          <AddIcon/>
-        </Fab>
-      );
-    } else {
-      return (
-        <Grid container spacing={2} justify="center">
-          <Grid item>
-            <TextField id="url" label="URL" onKeyPress={this.key}/>
-          </Grid>
-          <Grid item>
-            <TextField id="name" label="Name"/>
-          </Grid>
-          <Grid>
-            <IconButton>
-              <AddIcon/>
-            </IconButton>
-          </Grid>
-        </Grid>
-      );
-    }
+  constructor(props: any) {
+    super(props);
+    this.keyPress = this.keyPress.bind(this)
+    this.submitted = this.submitted.bind(this)
   }
 
+  render() {
+    return (
+      <Grid container spacing={2} justify="center">
+        <Grid item>
+          <TextField
+            id="url"
+            label="Add"
+            variant="outlined"
+            onChange={(e) => this.urlField = e.target.value}
+            onKeyDown={this.keyPress}/>
+        </Grid>
+        <Grid item>
+          <IconButton>
+            <AddIcon onClick={this.submitted}/>
+          </IconButton>
+        </Grid>
+      </Grid>
+    );
+  }
 
-  private key(e: KeyboardEvent) {
-    if (e.key === "Enter"){
-      this.submitted()
+  // TODO type this parameter. It seems to be 'KeyboardEvent<HTMLDivElement>' but that causes TS2315: Type 'KeyboardEvent' is not generic.
+  private keyPress(event: any) {
+    if (event.key === "Enter") {
+      this.submitted();
     }
   }
 
   private submitted() {
-    //TODO read state and send to firestore
+    // validate
+    if (!this.urlField) {
+      return
+    }
+    // update
+    console.log(this.urlField);
+    this.setState({active: false});
   }
 }
