@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { List, ListItem, ListItemText } from "@material-ui/core";
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
-import firebase, { firestore } from "firebase";
+import { firestore } from "firebase";
 
 class ResultViewerState {
   constructor(
@@ -10,17 +10,17 @@ class ResultViewerState {
   }
 }
 
+// TODO https://github.com/bvaughn/react-window#can-i-lazy-load-data-for-my-list
 export class ResultViewer extends Component<{}, ResultViewerState> {
 
   componentDidMount(): void {
-    let coll = firebase.firestore()
+    firestore()
       .collection("entries")
       .onSnapshot(snap => {
           this.setState({entries: snap.docs})
         }
       )
   }
-
 
   render() {
     if (this.state === null) {

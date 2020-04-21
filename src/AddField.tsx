@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import { Grid, IconButton, TextField } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
+import { Redirect } from 'react-router-dom';
 
-export class AddField extends Component {
-  private urlField: string;
+class State {
+  url: string
+}
+
+export class AddField extends Component<{}, State> {
+  private linkField: string;
 
   constructor(props: any) {
     super(props);
@@ -12,6 +17,9 @@ export class AddField extends Component {
   }
 
   render() {
+    if (this.state != null && this.state.url !== null) {
+      return <Redirect to={'/add/' + encodeURI(this.state.url)}/>
+    }
     return (
       <Grid container spacing={2} justify="center">
         <Grid item>
@@ -19,7 +27,7 @@ export class AddField extends Component {
             id="url"
             label="Add"
             variant="outlined"
-            onChange={(e) => this.urlField = e.target.value}
+            onChange={(e) => this.linkField = e.target.value}
             onKeyDown={this.keyPress}/>
         </Grid>
         <Grid item>
@@ -40,11 +48,10 @@ export class AddField extends Component {
 
   private submitted() {
     // validate
-    if (!this.urlField) {
+    if (!this.linkField) {
       return
     }
     // update
-    console.log(this.urlField);
-    this.setState({active: false});
+    this.setState({url: this.linkField})
   }
 }
