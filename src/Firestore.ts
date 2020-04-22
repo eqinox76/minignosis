@@ -13,7 +13,12 @@ export class Entry {
 
   public set url(url: string) {
     // decode url encoding and remove the protocol to better deduplicate
-    this._url = decodeURI(url).replace(/(^\w+:|^)\/\//, '');
+    const decoded = decodeURI(url);
+    if (!decoded.includes("http")) {
+      this._url = "https://" + decoded
+    } else {
+      this._url = decoded
+    }
   }
 
   public get url(): string {

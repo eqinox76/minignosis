@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { List, ListItem, ListItemText } from "@material-ui/core";
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
 import { firestore } from "firebase";
+import { Entry } from "./Firestore";
 
 class ResultViewerState {
   constructor(
@@ -34,15 +35,16 @@ export class ResultViewer extends Component<{}, ResultViewerState> {
     return (
       <List component="nav">
         {this.state.entries.map(function (ref: firestore.QueryDocumentSnapshot) {
+          const entry = Entry.fromFirestore(ref);
           return (
             <ListItem button key={ref.id}>
               <ListItemText primary={
                 <div>
-                  {ref.get("url")}
+                  {entry.url}
 
                 </div>
               }/>
-              <a href={ref.get("url")}><LinkOutlinedIcon/></a>
+              <a href={entry.url}><LinkOutlinedIcon/></a>
             </ListItem>
           );
         })}
