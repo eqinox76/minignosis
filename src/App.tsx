@@ -5,19 +5,17 @@ import LogoutButton from './Logout';
 import { ResultViewer } from './ResultViewer';
 import { AddField } from './AddField';
 import EditScreen from './EditScreen';
-import { BrowserRouter as Router, Route, RouteComponentProps, Switch, useHistory } from 'react-router-dom';
-import { auth, firestore } from "firebase";
+import { BrowserRouter as Router, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { auth } from "firebase";
+import { Entry, EntryCollection } from "./Firestore";
 
 class Adder extends React.Component<RouteComponentProps<any>> {
   componentDidMount(): void {
-    console.log(this.props.match.params.url);
-    // decode url encoding and remove the protocol to better deduplicate
-    let decoded = decodeURI(this.props.match.params.url).replace(/(^\w+:|^)\/\//, '');
-    let coll = firestore().collection("entries")
-    coll.where("url", "==", decoded).get().then(
+    const entry = new Entry(this.props.match.params.url);
+    EntryCollection.where("url", "==", entry.url).limit(1).get().then(
       result => {
         if (result.empty) {
-          coll.add({url: decoded}).then(
+          EntryCollection.add(entry.toFirestore()).then(
             doc => {
               this.props.history.push("/edit/" + doc.id)
             }
