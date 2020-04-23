@@ -41,6 +41,11 @@ module.exports = {
     output: {
         publicPath: '/',
         filename: 'main.js',
+    },
+    optimization: {
+        removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false,
     }
 };
 
