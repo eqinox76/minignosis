@@ -9,7 +9,9 @@ export class Entry {
     public name?: string,
     public imageUrl?: string,
     public description?: string,
-  ) {}
+    public tags?: string[]
+  ) {
+  }
 
   static fromFirestore(snap: firestore.QueryDocumentSnapshot | firestore.DocumentSnapshot): Entry {
     return new Entry(
@@ -17,15 +19,17 @@ export class Entry {
       snap.get("name"),
       snap.get("imageUrl"),
       snap.get("description"),
+      snap.get("tags"),
     )
   }
 
   toFirestore() {
-    const result = new Map([
+    const result = new Map<string, any>([
       ["url", this.url],
       ["name", this.name],
       ["imageUrl", this.imageUrl],
       ["description", this.description],
+      ["tags", this.tags],
     ]);
     return Array.from(result).reduce((obj: any, [key, value]) => {
       // need to filter undefined values for the firestore api

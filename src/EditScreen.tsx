@@ -8,6 +8,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import Fab from '@material-ui/core/Fab';
 import { Entry, EntryCollection } from "./Firestore";
 import { firestore } from "firebase";
+import { TagField } from "./TagField";
 
 class State {
   doc: Entry;
@@ -75,18 +76,41 @@ export default class EditScreen extends React.Component<RouteComponentProps<any>
         </AppBar>
         <Grid container spacing={2}>
           <Grid item>
-            <TextField id="name" label="Name" defaultValue={this.state.doc.name} onChange={(e) => {
-              let doc = this.state.doc;
-              doc.name = e.target.value;
-              this.setState({changed: true, doc: doc});
-            }}/>
+            <TextField id="name"
+                       label="Name"
+                       defaultValue={this.state.doc.name}
+                       onChange={(e) => {
+                         let doc = this.state.doc;
+                         doc.name = e.target.value;
+                         this.setState({changed: true, doc: doc});
+                       }}/>
           </Grid>
           <Grid item>
-            <TextField id="url" label="URL" defaultValue={this.state.doc.url} onChange={(e) => {
-              let doc = this.state.doc;
-              doc.url = e.target.value;
-              this.setState({changed: true, doc: doc});
-            }}/>
+            <TextField id="url"
+                       label="URL"
+                       defaultValue={this.state.doc.url}
+                       onChange={(e) => {
+                         let doc = this.state.doc;
+                         doc.url = e.target.value;
+                         this.setState({changed: true, doc: doc});
+                       }}/>
+          </Grid>
+          <Grid item>
+            <TagField tags={this.state.doc.tags}
+                      onAdd={(tag) => {
+                        if (this.state.doc.tags === undefined) {
+                          this.state.doc.tags = []
+                        }
+                        if (this.state.doc.tags.indexOf(tag) !== -1) {
+                          return
+                        }
+                        this.state.doc.tags.push(tag);
+                        this.setState({changed: true, doc: this.state.doc});
+                      }}
+                      onDelete={(tag) => {
+                        this.state.doc.tags = this.state.doc.tags.filter((e) => e != tag);
+                        this.setState({changed: true, doc: this.state.doc});
+                      }}/>
           </Grid>
         </Grid>
         <Fab onClick={this.save} disabled={!this.state.changed}>

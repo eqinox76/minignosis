@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { List, ListItem, ListItemText } from "@material-ui/core";
+import { Chip, List, ListItem, ListItemText } from "@material-ui/core";
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
 import { firestore } from "firebase";
 import { Entry } from "./Firestore";
@@ -64,7 +64,12 @@ class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, Re
         <ListItemText
           primary={this.entry.name ?? this.entry.url}
         />
-        <a href={this.entry.url}><LinkOutlinedIcon/></a>
+        <ul>
+          {this.entry.tags?.map((tag: string) => <Chip key={tag} size="small" label={tag}/>)}
+        </ul>
+        <a href={this.entry.url}>
+          <LinkOutlinedIcon/>
+        </a>
       </ListItem>
     )
   }
