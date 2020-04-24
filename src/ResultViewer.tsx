@@ -3,6 +3,7 @@ import { List, ListItem, ListItemText } from "@material-ui/core";
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
 import { firestore } from "firebase";
 import { Entry } from "./Firestore";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 
 
 class ResultViewerState {
@@ -37,27 +38,29 @@ export class ResultViewer extends Component<{}, ResultViewerState> {
     return (
       <List component="nav">
         {this.state.entries.map((e) => {
-          return <ResultItem doc={e} key={e.id}/>
+          return <ResultItemWithRouter doc={e} key={e.id}/>
         })}
       </List>
     );
   }
 }
 
+class ResultItemProp {
+  public doc: firestore.QueryDocumentSnapshot
+}
+
 class ResultItemState {
 
 }
 
-class ResultItem extends Component<{
-  doc: firestore.QueryDocumentSnapshot
-}, ResultItemState> {
+class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, ResultItemState> {
   private entry: Entry;
 
   render() {
     this.entry = Entry.fromFirestore(this.props.doc);
     return (
       // TODO https://www.npmjs.com/package/open-graph-scraper
-      <ListItem button>
+      <ListItem button onClick={() => this.props.history.push("/edit/" + this.props.doc.id)}>
         <ListItemText
           primary={this.entry.name ?? this.entry.url}
         />
@@ -66,3 +69,5 @@ class ResultItem extends Component<{
     )
   }
 }
+
+const ResultItemWithRouter = withRouter(ResultItem);
