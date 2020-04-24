@@ -12,13 +12,13 @@ export class AddField extends Component<{}, State> {
 
   constructor(props: any) {
     super(props);
-    this.keyPress = this.keyPress.bind(this)
-    this.submitted = this.submitted.bind(this)
+    this.keyPress = this.keyPress.bind(this);
+    this.submitted = this.submitted.bind(this);
   }
 
   render() {
     if (this.state != null && this.state.url !== null) {
-      return <Redirect to={'/add/' + encodeURI(this.state.url)}/>
+      return <Redirect to={'/add/' + this.state.url}/>
     }
     return (
       <Grid container spacing={2} justify="center">
@@ -27,7 +27,7 @@ export class AddField extends Component<{}, State> {
             id="url"
             label="Add"
             variant="outlined"
-            onChange={(e) => this.linkField = e.target.value}
+            onChange={(e) => this.linkField = encodeURIComponent(e.target.value)}
             onKeyDown={this.keyPress}/>
         </Grid>
         <Grid item>

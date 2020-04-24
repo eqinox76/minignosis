@@ -11,15 +11,17 @@ import { Entry, EntryCollection } from "./Firestore";
 
 class Adder extends React.Component<RouteComponentProps<any>> {
   componentDidMount(): void {
-    const entry = new Entry(this.props.match.params.url);
+    let decoded = decodeURIComponent(this.props.match.params.url);
+    if (!decoded.includes("http")) {
+      decoded = "https://" + decoded
+    }
+    const entry = new Entry(decoded);
     EntryCollection.where("url", "==", entry.url).limit(1).get().then(
       result => {
         if (result.empty) {
-          EntryCollection.add(entry.toFirestore()).then(
-            doc => {
-              this.props.history.push("/edit/" + doc.id)
-            }
-          )
+          EntryCollection
+            .add(entry.toFirestore())
+            .then(doc => this.props.history.push("/edit/" + doc.id))
         } else {
           this.props.history.push("/edit/" + result.docs[0].id)
         }

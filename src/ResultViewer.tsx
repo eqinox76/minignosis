@@ -4,6 +4,7 @@ import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
 import { firestore } from "firebase";
 import { Entry } from "./Firestore";
 
+
 class ResultViewerState {
   constructor(
     public entries: Array<firestore.QueryDocumentSnapshot> = []
@@ -22,22 +23,6 @@ export class ResultViewer extends Component<{}, ResultViewerState> {
           this.setState({entries: snap.docs})
         }
       )
-  }
-
-  renderListItem(ref: firestore.QueryDocumentSnapshot) {
-    const entry = Entry.fromFirestore(ref);
-    return (
-      // TODO https://www.npmjs.com/package/open-graph-scraper
-      <ListItem button key={ref.id}>
-        <ListItemText primary={
-          <div>
-            {entry.url}
-
-          </div>
-        }/>
-        <a href={entry.url}><LinkOutlinedIcon/></a>
-      </ListItem>
-    );
   }
 
   render() {
@@ -66,15 +51,17 @@ class ResultItemState {
 class ResultItem extends Component<{
   doc: firestore.QueryDocumentSnapshot
 }, ResultItemState> {
+  private entry: Entry;
 
   render() {
-    const entry = Entry.fromFirestore(this.props.doc);
+    this.entry = Entry.fromFirestore(this.props.doc);
     return (
       // TODO https://www.npmjs.com/package/open-graph-scraper
       <ListItem button key={this.props.doc.id}>
-        <ListItemText primary={entry.name ?? entry.url}
+        <ListItemText
+          primary={this.entry.name ?? this.entry.url}
         />
-        <a href={entry.url}><LinkOutlinedIcon/></a>
+        <a href={this.entry.url}><LinkOutlinedIcon/></a>
       </ListItem>
     )
   }
