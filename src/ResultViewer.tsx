@@ -29,7 +29,7 @@ export class ResultViewer extends Component<{}, ResultViewerState> {
     if (this.state === null) {
       return (
         <List component="nav">
-          <ListItem button>
+          <ListItem button key={4}>
             <ListItemText primary="Loading..."/>
           </ListItem>
         </List>);
@@ -37,7 +37,7 @@ export class ResultViewer extends Component<{}, ResultViewerState> {
     return (
       <List component="nav">
         {this.state.entries.map((e) => {
-          return <ResultItem doc={e}/>
+          return <ResultItem doc={e} key={e.id}/>
         })}
       </List>
     );
@@ -57,7 +57,7 @@ class ResultItem extends Component<{
     this.entry = Entry.fromFirestore(this.props.doc);
     return (
       // TODO https://www.npmjs.com/package/open-graph-scraper
-      <ListItem button key={this.props.doc.id}>
+      <ListItem button>
         <ListItemText
           primary={this.entry.name ?? this.entry.url}
         />
