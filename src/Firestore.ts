@@ -39,7 +39,25 @@ export class Entry {
       return obj;
     }, {});
   }
+}
 
+export class Tags {
+  static async fromFirestore(): Promise<string[]> {
+    return firestore().collection("meta")
+      .doc("meta")
+      .get()
+      .then((doc) => doc.get("tags") ?? [])
+  }
 
+  static async addToFirestore(newTag: string) {
+    this.fromFirestore()
+      .then((tags) => {
+        tags.push(newTag);
+        tags.sort((a: string, b: string) => a.localeCompare(b));
+        firestore().collection("meta")
+          .doc("meta")
+          .update("tags", tags);
+      })
+  }
 }
 
