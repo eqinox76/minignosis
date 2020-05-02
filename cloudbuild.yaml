@@ -1,0 +1,12 @@
+steps:
+  - name: node:13.14
+    entrypoint: 'npm'
+    args: ['install']
+
+  - name: node:13.14
+    entrypoint: 'npx'
+    args: ['webpack']
+
+  # https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-firebase
+  - name: eu.gcr.io/$PROJECT_ID/firebase
+    args: ['deploy', '--project=$PROJECT_ID', '--only=hosting']
