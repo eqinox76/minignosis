@@ -1,12 +1,29 @@
 steps:
-  - name: node:13.14
+  - name: 'node:13.14'
     entrypoint: 'npm'
     args: ['install']
 
-  - name: node:13.14
+  - name: 'node:13.14'
     entrypoint: 'npx'
     args: ['webpack']
 
   # https://cloud.google.com/cloud-build/docs/deploying-builds/deploy-firebase
-  - name: eu.gcr.io/$PROJECT_ID/firebase
+  - name: 'eu.gcr.io/$PROJECT_ID/firebase'
     args: ['deploy', '--project=$PROJECT_ID', '--only=hosting']
+
+  # cloud function to generate preview of new links
+  - name: 'gcr.io/cloud-builders/gcloud'
+    dir: link-preview
+    args:
+      [
+        'functions' ,
+        'deploy' ,
+        'AddPreview' ,
+        '--runtime=go113',
+        '--trigger-event=providers/cloud.firestore/eventTypes/document.write',
+        '--trigger-resource=projects/$PROJECT_ID/databases/(default)/documents/entries/{id}',
+        '--region=europe-west3',
+        '--max-instances=1',
+        '--memory=128MB',
+      ]
+    waitFor: ['-']
