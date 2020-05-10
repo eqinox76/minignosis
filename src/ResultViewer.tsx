@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import { Chip, List, ListItem, ListItemText } from "@material-ui/core";
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Typography from '@material-ui/core/Typography';
 import { firestore } from "firebase";
 import { Entry } from "./Firestore";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-
 
 class ResultViewerState {
   constructor(
@@ -21,8 +24,8 @@ export class ResultViewer extends Component<{}, ResultViewerState> {
       .collection("entries")
       .limit(30)
       .onSnapshot(snap => {
-          this.setState({entries: snap.docs})
-        }
+        this.setState({ entries: snap.docs })
+      }
       )
   }
 
@@ -31,14 +34,14 @@ export class ResultViewer extends Component<{}, ResultViewerState> {
       return (
         <List component="nav">
           <ListItem button key={4}>
-            <ListItemText primary="Loading..."/>
+            <ListItemText primary="Loading..." />
           </ListItem>
         </List>);
     }
     return (
       <List component="nav">
         {this.state.entries.map((e) => {
-          return <ResultItemWithRouter doc={e} key={e.id}/>
+          return <ResultItemWithRouter doc={e} key={e.id} />
         })}
       </List>
     );
@@ -61,16 +64,23 @@ class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, Re
     return (
       // TODO https://www.npmjs.com/package/open-graph-scraper
       <ListItem button onClick={() => this.props.history.push("/edit/" + this.props.doc.id)}>
-        <ListItemText
-          primary={this.entry.name ?? this.entry.url}
-        />
-        <ul>
-          {this.entry.tags?.map((tag: string) => <Chip key={tag} size="small" label={tag}/>)}
-        </ul>
-        <a href={this.entry.url}>
-          <LinkOutlinedIcon/>
-        </a>
-      </ListItem>
+        <Card>
+          <CardMedia style={{ height: 50, width: 30 }}>
+            <img src={this.entry.imageUrl} />
+          </CardMedia>
+          <CardContent>
+            <Typography variant="body2" color="textSecondary" component="p">
+              {this.entry.name ?? this.entry.url}
+            </Typography>
+            <ul>
+              {this.entry.tags?.map((tag: string) => <Chip key={tag} size="small" label={tag} />)}
+            </ul>
+            <a href={this.entry.url}>
+              <LinkOutlinedIcon />
+            </a>
+          </CardContent>
+        </Card>
+      </ListItem >
     )
   }
 }
