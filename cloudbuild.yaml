@@ -18,7 +18,7 @@ steps:
       [
         'functions' ,
         'deploy' ,
-        'AddPreview' ,
+        'Main' ,
         '--runtime=go113',
         '--trigger-event=providers/cloud.firestore/eventTypes/document.write',
         '--trigger-resource=projects/$PROJECT_ID/databases/(default)/documents/entries/{id}',

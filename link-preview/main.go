@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"encoding/json"
 	"time"
+	"regexp"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -36,9 +38,9 @@ type FirestoreValue struct {
 	UpdateTime time.Time `json:"updateTime"`
 }
 
-// we are only interessted in reading the url
 type MyData struct {
 	Url StringValue `json:"url"`
+	Name StringValue `json:"name"`
 }
 
 // https://medium.com/swlh/rollbacks-and-infinite-loops-with-firestore-and-cloud-functions-in-golang-263aa76398da
@@ -48,9 +50,9 @@ type StringValue struct {
 
 // GOOGLE_CLOUD_PROJECT is automatically set by the Cloud Functions runtime.
 var projectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
-
-// client is a Firestore client, reused between function invocations.
 var client *firestore.Client
+
+var wordsRE = regexp.MustCompile(`\w+`)
 
 func init() {
 	// Use the application default credentials.
@@ -71,19 +73,43 @@ func init() {
 	}
 }
 
-// AddPreview is triggered by a change to a Firestore document. It updates
-// the `original` value of the document to upper case.
-func AddPreview(ctx context.Context, e FirestoreEvent) error {
+func Main(ctx context.Context, e FirestoreEvent) error{
+	
+	j, _ := json.Marshal(e)
+	log.Printf(string(j))
+	
+	applyIfChanged(ctx, e, "url", AddPreview)
+	applyIfChanged(ctx, e, "name", AddSearch)
+	return nil
+}
+
+// applies applyfunc if the document is new or path has changed
+func applyIfChanged(ctx context.Context,e FirestoreEvent, path string, applyfunc func(context.Context, FirestoreEvent)){
 	var nullTime time.Time
 
-	// j, _ := json.Marshal(e)
-	// log.Printf(string(j))
-
-	if e.OldValue.CreateTime != nullTime {
-		// this is an update or deletion.
-		return nil
+	if e.Value.CreateTime == nullTime {
+		// deletion
+		return
 	}
 
+	if e.OldValue.CreateTime == nullTime {
+		// new document. Check if the path exists
+		applyfunc(ctx, e)
+		return
+	}
+
+	// this was an update check if an interessting field was updated
+	for _, v := range e.UpdateMask.FieldPaths{
+		if v == path {
+			applyfunc(ctx, e)
+			return
+		}
+	}
+}
+
+// AddPreview is triggered by a change to a Firestore document. It updates
+// the `original` value of the document to upper case.
+func AddPreview(ctx context.Context, e FirestoreEvent) {
 	url := e.Value.Fields.Url.Str
 
 	resp, err := http.Get(url)
@@ -99,23 +125,27 @@ func AddPreview(ctx context.Context, e FirestoreEvent) error {
 		log.Fatalf("info.Parse: %v", err)
 	}
 
-	fullPath := strings.Split(e.Value.Name, "/documents/")[1]
-	pathParts := strings.Split(fullPath, "/")
-	collection := pathParts[0]
-	doc := strings.Join(pathParts[1:], "/")
-
 	data := []firestore.Update{
 		{Path: "name", Value: info.Title},
 		{Path: "description", Value: info.Description},
 		{Path: "imageUrl", Value: extractImage(info)},
 	}
-	_, err = client.Collection(collection).Doc(doc).Update(ctx, data)
+	update(ctx, e, data)
+}
 
-	if err != nil {
-		log.Fatalf("client.Collection: %v", err)
+
+func AddSearch(ctx context.Context, e FirestoreEvent) {
+	var sanitized []string
+	for _, elem := range wordsRE.FindAllString(e.Value.Fields.Name.Str, -1){
+		if len(elem) >= 3 {
+			sanitized = append(sanitized, strings.ToLower(elem))
+		}
 	}
 
-	return nil
+	data := []firestore.Update{
+		{Path: "search", Value: sanitized},
+	}
+	update(ctx, e, data)
 }
 
 func extractImage(info *htmlinfo.HTMLInfo) string {
@@ -137,4 +167,17 @@ func extractImage(info *htmlinfo.HTMLInfo) string {
 	}
 
 	return ""
+}
+
+func update (ctx context.Context, e FirestoreEvent, data []firestore.Update){
+	fullPath := strings.Split(e.Value.Name, "/documents/")[1]
+	pathParts := strings.Split(fullPath, "/")
+	collection := pathParts[0]
+	doc := strings.Join(pathParts[1:], "/")
+
+	_, err := client.Collection(collection).Doc(doc).Update(ctx, data)
+
+	if err != nil {
+		log.Fatalf("client.Collection: %v", err)
+	}
 }
