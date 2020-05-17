@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Chip, List, ListItem, ListItemText } from "@material-ui/core";
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
+import Grid from "@material-ui/core/Grid";
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -39,11 +40,11 @@ export class ResultViewer extends Component<{}, ResultViewerState> {
         </List>);
     }
     return (
-      <List component="nav">
+      <Grid container spacing={4}>
         {this.state.entries.map((e) => {
           return <ResultItemWithRouter doc={e} key={e.id} />
         })}
-      </List>
+      </Grid>
     );
   }
 }
@@ -62,12 +63,12 @@ class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, Re
   render() {
     this.entry = Entry.fromFirestore(this.props.doc);
     return (
-      // TODO https://www.npmjs.com/package/open-graph-scraper
-      <ListItem button onClick={() => this.props.history.push("/edit/" + this.props.doc.id)}>
-        <Card>
-          <CardMedia style={{ height: 50, width: 30 }}>
-            <img src={this.entry.imageUrl} />
-          </CardMedia>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <Card style={{ height: "100%" }}
+          onClick={() => this.props.history.push("/edit/" + this.props.doc.id)}>
+          <CardMedia component="img"
+            image={this.entry.imageUrl}
+          />
           <CardContent>
             <Typography variant="body2" color="textSecondary" component="p">
               {this.entry.name ?? this.entry.url}
@@ -80,7 +81,7 @@ class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, Re
             </a>
           </CardContent>
         </Card>
-      </ListItem >
+      </Grid>
     )
   }
 }
