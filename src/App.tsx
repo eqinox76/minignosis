@@ -1,4 +1,4 @@
-import * as React from "react"
+import React, { useState } from 'react';
 import { AppBar, IconButton, TextField, Toolbar, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import MenuIcon from '@material-ui/icons/Menu';
@@ -64,6 +64,9 @@ export function App() {
     }
   });
 
+  let searchTerm = ""
+  const [search, setSearch] = useState("")
+
   return (
     <Router>
       <Switch>
@@ -88,6 +91,13 @@ export function App() {
                       id="outlined-basic"
                       label="Search"
                       variant="outlined"
+                      onChange={(e) => { searchTerm = e.target.value }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          setSearch(searchTerm);
+                        }
+                      }
+                      }
                     />
                   </Grid>
                   <Grid item>
@@ -96,7 +106,7 @@ export function App() {
                 </Toolbar>
               </Grid>
             </AppBar>
-            <ResultViewer />
+            <ResultViewer search={search} />
             <AddField />
           </div>
         </Route>

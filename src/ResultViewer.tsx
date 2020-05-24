@@ -12,22 +12,48 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 
 class ResultViewerState {
   constructor(
-    public entries: Array<firestore.QueryDocumentSnapshot> = []
+    public entries: Array<firestore.QueryDocumentSnapshot> = [],
+    public lastSearchTerm: String,
   ) {
   }
 }
 
+class ResultViewerProps {
+  search: String
+}
+
 // TODO https://github.com/bvaughn/react-window#can-i-lazy-load-data-for-my-list
-export class ResultViewer extends Component<{}, ResultViewerState> {
+export class ResultViewer extends Component<ResultViewerProps, ResultViewerState> {
 
   componentDidMount(): void {
-    firestore()
+    this.maybeUpdate()
+  }
+
+  componentDidUpdate(): void {
+    this.maybeUpdate()
+  }
+
+  maybeUpdate() {
+    if (this.state !== null && this.state.lastSearchTerm == this.props.search) {
+      // no new search necessary
+      return
+    }
+
+    let request = firestore()
       .collection("entries")
       .limit(30)
-      .onSnapshot(snap => {
-        this.setState({ entries: snap.docs })
-      }
-      )
+
+    if (this.props.search.length != 0) {
+      let searchTerms = this.props.search.match(/\w+/g).map((token: String) => {
+        return token.toLowerCase()
+      })
+
+      request = request.where('search', 'array-contains-any', searchTerms)
+    }
+
+    request.onSnapshot(snap => {
+      this.setState({ entries: snap.docs, lastSearchTerm: this.props.search })
+    })
   }
 
   render() {
