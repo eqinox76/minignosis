@@ -1,10 +1,18 @@
 import React, { Component } from "react";
-import { Grid, IconButton, TextField } from "@material-ui/core";
+import { IconButton, TextField } from "@material-ui/core";
+import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import { Redirect } from 'react-router-dom';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 class State {
   url: string
+  expanded: boolean
 }
 
 export class AddField extends Component<{}, State> {
@@ -17,25 +25,47 @@ export class AddField extends Component<{}, State> {
   }
 
   render() {
-    if (this.state != null && this.state.url !== null) {
-      return <Redirect to={'/add/' + this.state.url}/>
+    if (this.state != null && this.state.url !== undefined) {
+      return <Redirect to={'/add/' + this.state.url} />
     }
     return (
-      <Grid container spacing={2} justify="center">
-        <Grid item>
-          <TextField
-            id="url"
-            label="Add"
-            variant="outlined"
-            onChange={(e) => this.linkField = encodeURIComponent(e.target.value)}
-            onKeyDown={this.keyPress}/>
-        </Grid>
-        <Grid item>
-          <IconButton>
-            <AddIcon onClick={this.submitted}/>
-          </IconButton>
-        </Grid>
-      </Grid>
+      <div>
+        <Fab color="primary"
+          style={{
+            margin: 0,
+            top: 'auto',
+            right: 20,
+            bottom: 20,
+            left: 'auto',
+            position: 'fixed'
+          }}
+          onClick={() => { this.setState({ expanded: true }) }}>
+          <AddIcon />
+        </Fab>
+        <Dialog open={this.state != null && this.state.expanded} onClose={() => { this.setState({ expanded: false }) }}>
+          <DialogTitle>Add</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Please urls article to be added.
+        </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Add"
+              fullWidth
+              onChange={(e) => this.linkField = encodeURIComponent(e.target.value)}
+              onKeyDown={this.keyPress} />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => { this.setState({ expanded: false }) }} color="primary">
+              Cancel
+        </Button>
+            <Button onClick={this.submitted} color="primary">
+              Add
+        </Button>
+          </DialogActions>
+        </Dialog>
+      </div >
     );
   }
 
@@ -52,6 +82,6 @@ export class AddField extends Component<{}, State> {
       return
     }
     // update
-    this.setState({url: this.linkField})
+    this.setState({ url: this.linkField })
   }
 }

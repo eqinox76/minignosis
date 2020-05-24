@@ -1,5 +1,6 @@
 import * as React from "react"
 import { AppBar, IconButton, TextField, Toolbar, Typography } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 import MenuIcon from '@material-ui/icons/Menu';
 import LogoutButton from './Logout';
 import { ResultViewer } from './ResultViewer';
@@ -37,13 +38,13 @@ class Adder extends React.Component<RouteComponentProps<any>> {
             <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => {
               this.props.history.push("/");
             }}>
-              <MenuIcon/>
+              <MenuIcon />
             </IconButton>
             <Typography variant="h6">
               Adding {this.props.match.params.url}
             </Typography>
-            <div style={{flexGrow: 1}}/>
-            <LogoutButton/>
+            <div style={{ flexGrow: 1 }} />
+            <LogoutButton />
           </Toolbar>
         </AppBar>
       </div>
@@ -66,22 +67,37 @@ export function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/edit/:id" component={EditScreen}/>
-        <Route path="/add/:url" component={Adder}/>
+        <Route path="/edit/:id" component={EditScreen} />
+        <Route path="/add/:url" component={Adder} />
         <Route path="/">
           <div>
             <AppBar position="static">
-              <Toolbar>
-                <IconButton edge="start" color="inherit" aria-label="menu">
-                  <MenuIcon/>
-                </IconButton>
-                <TextField id="outlined-basic" label="Search" variant="outlined"/>
-                <AddField/>
-                <div style={{flexGrow: 1}}/>
-                <LogoutButton/>
-              </Toolbar>
+              <Grid container
+                direction="row"
+                justify="space-between"
+              >
+                <Toolbar>
+                  <Grid item>
+                    <IconButton edge="start" color="inherit" aria-label="menu">
+                      <MenuIcon />
+                    </IconButton>
+                  </Grid>
+                  <Grid item xs={10}>
+                    <TextField
+                      fullWidth
+                      id="outlined-basic"
+                      label="Search"
+                      variant="outlined"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <LogoutButton />
+                  </Grid>
+                </Toolbar>
+              </Grid>
             </AppBar>
-            <ResultViewer/>
+            <ResultViewer />
+            <AddField />
           </div>
         </Route>
       </Switch>
