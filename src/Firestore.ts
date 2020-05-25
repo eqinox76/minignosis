@@ -9,7 +9,8 @@ export class Entry {
     public name?: string,
     public imageUrl?: string,
     public description?: string,
-    public tags?: string[]
+    public tags?: string[],
+    public added?: firestore.Timestamp
   ) {
   }
 
@@ -20,6 +21,7 @@ export class Entry {
       snap.get("imageUrl"),
       snap.get("description"),
       snap.get("tags"),
+      snap.get("added")
     )
   }
 
@@ -30,6 +32,7 @@ export class Entry {
       ["imageUrl", this.imageUrl],
       ["description", this.description],
       ["tags", this.tags],
+      ["added", this.added === undefined ? firestore.FieldValue.serverTimestamp() : this.added]
     ]);
     return Array.from(result).reduce((obj: any, [key, value]) => {
       // need to filter undefined values for the firestore api

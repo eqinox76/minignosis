@@ -41,7 +41,8 @@ export class ResultViewer extends Component<ResultViewerProps, ResultViewerState
 
     let request = firestore()
       .collection("entries")
-      .limit(30)
+      .limit(50)
+      .orderBy("added", "desc")
 
     if (this.props.search.length != 0) {
       let searchTerms = this.props.search.match(/\w+/g).map((token: String) => {
@@ -89,7 +90,7 @@ class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, Re
   render() {
     this.entry = Entry.fromFirestore(this.props.doc);
     return (
-      <Grid item xs={12} sm={6} md={4} lg={3}>
+      <Grid item xs={12} md={6} lg={3} xl={2}>
         <Card style={{ height: "100%" }}
           onClick={() => this.props.history.push("/edit/" + this.props.doc.id)}>
           <CardMedia component="img"
