@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { firestore } from "firebase";
 import { Entry } from "./Firestore";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import * as _ from "lodash";
 
 class ResultViewerState {
   constructor(
@@ -53,7 +54,16 @@ export class ResultViewer extends Component<ResultViewerProps, ResultViewerState
     }
 
     request.onSnapshot(snap => {
-      this.setState({ entries: snap.docs, lastSearchTerm: this.props.search })
+      var docs = snap.docs;
+      if (this.props.search.length > 0) {
+        let tokens = this.props.search.match(/\w+/g)
+        // stable sorting
+        docs = _.sortBy(snap.docs, (d: firestore.QueryDocumentSnapshot) => {
+          let entry = Entry.fromFirestore(d)
+          return entry.search.filter(element => tokens.includes(element)).length
+        }).reverse()
+      }
+      this.setState({ entries: docs, lastSearchTerm: this.props.search })
     })
   }
 
