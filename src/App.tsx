@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { AppBar, IconButton, TextField, Toolbar, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import MenuIcon from '@material-ui/icons/Menu';
-import LogoutButton from './Logout';
 import { ResultViewer } from './ResultViewer';
 import { AddField } from './AddField';
 import EditScreen from './EditScreen';
 import { BrowserRouter as Router, Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { auth } from "firebase";
 import { Entry, EntryCollection } from "./Firestore";
+import UserProvider, { AuthButton } from './Auth';
 
 class Adder extends React.Component<RouteComponentProps<any>> {
   componentDidMount(): void {
@@ -44,7 +43,7 @@ class Adder extends React.Component<RouteComponentProps<any>> {
               Adding {this.props.match.params.url}
             </Typography>
             <div style={{ flexGrow: 1 }} />
-            <LogoutButton />
+            <AuthButton />
           </Toolbar>
         </AppBar>
       </div>
@@ -53,63 +52,55 @@ class Adder extends React.Component<RouteComponentProps<any>> {
 }
 
 export function App() {
-  let provider = new auth.GoogleAuthProvider();
-  auth().getRedirectResult().then(function (result) {
-    if (result.user) {
-      console.log(`user logged in ${result.user.email}`);
-    } else if (auth().currentUser) {
-      console.log(`already logged in user: ${auth().currentUser.email}`);
-    } else {
-      auth().signInWithRedirect(provider);
-    }
-  });
 
   let searchTerm = ""
   const [search, setSearch] = useState("")
 
   return (
-    <Router>
-      <Switch>
-        <Route path="/edit/:id" component={EditScreen} />
-        <Route path="/add/:url" component={Adder} />
-        <Route path="/">
-          <div>
-            <AppBar position="static">
-              <Grid container
-                direction="row"
-                justify="space-between"
-              >
-                <Toolbar>
-                  <Grid item>
-                    <IconButton edge="start" color="inherit" aria-label="menu">
-                      <MenuIcon />
-                    </IconButton>
-                  </Grid>
-                  <Grid item xs={10}>
-                    <TextField
-                      fullWidth
-                      id="outlined-basic"
-                      label="Search"
-                      variant="outlined"
-                      onChange={(e) => { searchTerm = e.target.value }}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          setSearch(searchTerm);
+    <UserProvider>
+      <Router>
+        <Switch>
+          <Route path="/edit/:id" component={EditScreen} />
+          <Route path="/add/:url" component={Adder} />
+          <Route path="/">
+            <div>
+              <AppBar position="static">
+                <Grid container
+                  direction="row"
+                  justify="space-between"
+                >
+                  <Toolbar>
+                    <Grid item>
+                      <IconButton edge="start" color="inherit" aria-label="menu">
+                        <MenuIcon />
+                      </IconButton>
+                    </Grid>
+                    <Grid item xs={10}>
+                      <TextField
+                        fullWidth
+                        id="outlined-basic"
+                        label="Search"
+                        variant="outlined"
+                        onChange={(e) => { searchTerm = e.target.value }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            setSearch(searchTerm);
+                          }
                         }
-                      }
-                      }
-                    />
-                  </Grid>
-                  <Grid item>
-                    <LogoutButton />
-                  </Grid>
-                </Toolbar>
-              </Grid>
-            </AppBar>
-            <ResultViewer search={search} />
-            <AddField />
-          </div>
-        </Route>
-      </Switch>
-    </Router>);
+                        }
+                      />
+                    </Grid>
+                    <Grid item>
+                      <AuthButton />
+                    </Grid>
+                  </Toolbar>
+                </Grid>
+              </AppBar>
+              <ResultViewer search={search} />
+              <AddField />
+            </div>
+          </Route>
+        </Switch>
+      </Router>
+    </UserProvider>);
 }
