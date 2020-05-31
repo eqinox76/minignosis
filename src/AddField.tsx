@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import { IconButton, TextField } from "@material-ui/core";
+import React, { Component, useContext } from "react";
+import { TextField } from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
@@ -9,6 +9,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { UserContext, authorized } from "./Auth";
 
 class State {
   url: string
@@ -16,6 +17,7 @@ class State {
 }
 
 export class AddField extends Component<{}, State> {
+  static contextType = UserContext
   private linkField: string;
 
   constructor(props: any) {
@@ -31,6 +33,7 @@ export class AddField extends Component<{}, State> {
     return (
       <div>
         <Fab color="primary"
+          disabled={!authorized(this.context)}
           style={{
             margin: 0,
             top: 'auto',

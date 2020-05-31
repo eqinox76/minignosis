@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useContext } from "react";
 import { Chip, List, ListItem, ListItemText } from "@material-ui/core";
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
 import Grid from "@material-ui/core/Grid";
@@ -10,6 +10,7 @@ import { firestore } from "firebase";
 import { Entry } from "./Firestore";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import * as _ from "lodash";
+import { UserContext, authorized } from "./Auth";
 
 class ResultViewerState {
   constructor(
@@ -95,6 +96,7 @@ class ResultItemState {
 }
 
 class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, ResultItemState> {
+  static contextType = UserContext
   private entry: Entry;
 
   render() {
@@ -102,7 +104,11 @@ class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, Re
     return (
       <Grid item xs={12} md={6} lg={3} xl={2}>
         <Card style={{ height: "100%" }}
-          onClick={() => this.props.history.push("/edit/" + this.props.doc.id)}>
+          onClick={() => {
+            if (authorized(this.context)) {
+              this.props.history.push("/edit/" + this.props.doc.id)
+            }
+          }}>
           <CardMedia component="img"
             image={this.entry.imageUrl}
           />

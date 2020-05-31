@@ -4,7 +4,11 @@ import { IconButton, Tooltip, Avatar } from "@material-ui/core";
 import { auth } from "firebase";
 import firebase from "firebase";
 
-export const UserContext = createContext<{ user: firebase.User }>({ user: null });
+class UserInfo {
+    user: firebase.User
+}
+
+export const UserContext = createContext<UserInfo>({ user: null });
 
 let authRegistered = false;
 
@@ -30,9 +34,13 @@ function UserProvider(props: { children: React.ReactNode; }) {
     );
 }
 
+export function authorized(user: UserInfo): boolean {
+    return user.user !== null && user.user !== undefined;
+}
+
 export function AuthButton() {
     const user = useContext(UserContext);
-    if (user.user === null || user.user === undefined) {
+    if (!authorized(user)) {
         return (
             <Tooltip title="Sign In">
                 <IconButton
