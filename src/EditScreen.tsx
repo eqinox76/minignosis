@@ -1,14 +1,14 @@
 import React from "react";
 import { RouteComponentProps } from 'react-router-dom';
 import { AppBar, Grid, IconButton, TextField, Toolbar, Typography } from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
+import HomeIcon from "@material-ui/icons/Home";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import SaveIcon from '@material-ui/icons/Save';
 import Fab from '@material-ui/core/Fab';
 import { Entry, EntryCollection } from "./Firestore";
 import { firestore } from "firebase";
 import { TagField } from "./TagField";
-import UserProvider, { AuthButton } from './Auth';
+import { AuthButton } from './Auth';
 
 
 class State {
@@ -47,7 +47,7 @@ export default class EditScreen extends React.Component<RouteComponentProps<any>
             <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => {
               this.props.history.push("/");
             }}>
-              <MenuIcon />
+              <HomeIcon />
             </IconButton>
             <Typography variant="h6">
               Edit
@@ -66,7 +66,7 @@ export default class EditScreen extends React.Component<RouteComponentProps<any>
             <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => {
               this.props.history.push("/");
             }}>
-              <MenuIcon />
+              <HomeIcon />
             </IconButton>
             <Typography variant="h6">
               Edit

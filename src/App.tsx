@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AppBar, IconButton, TextField, Toolbar, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import MenuIcon from '@material-ui/icons/Menu';
+import HomeIcon from '@material-ui/icons/Home';
 import { ResultViewer } from './ResultViewer';
 import { AddField } from './AddField';
 import EditScreen from './EditScreen';
@@ -37,7 +37,7 @@ class Adder extends React.Component<RouteComponentProps<any>> {
             <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => {
               this.props.history.push("/");
             }}>
-              <MenuIcon />
+              <HomeIcon />
             </IconButton>
             <Typography variant="h6">
               Adding {this.props.match.params.url}
@@ -72,7 +72,7 @@ export function App() {
                   <Toolbar>
                     <Grid item>
                       <IconButton edge="start" color="inherit" aria-label="menu">
-                        <MenuIcon />
+                        <HomeIcon />
                       </IconButton>
                     </Grid>
                     <Grid item xs={10}>
