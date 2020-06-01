@@ -36,7 +36,12 @@ export class TagField extends React.Component<TagFieldProps, { input: string, ta
 
   componentDidMount(): void {
     Tags.fromFirestore()
-      .then((tags) => this.setState({tags: tags.filter((t) => !this.props.tags.includes(t))}))
+      .then((tags) => {
+        if (this.props.tags !== undefined) {
+          tags = tags.filter((t) => !this.props.tags.includes(t))
+        }
+        this.setState({ tags: tags })
+      })
   }
 
   render() {
@@ -52,7 +57,7 @@ export class TagField extends React.Component<TagFieldProps, { input: string, ta
           options={this.state.tags}
           inputValue={this.state.input}
           onInputChange={(_, value) => {
-            this.setState({input: value.toLowerCase()})
+            this.setState({ input: value.toLowerCase() })
           }}
           onKeyDown={(event: any) => {
             if (event.key === "Enter") {
@@ -63,17 +68,17 @@ export class TagField extends React.Component<TagFieldProps, { input: string, ta
           }}
           renderInput={(params) => (
             <Grid>
-              <TextField {...params} label="add tag"/>
+              <TextField {...params} label="add tag" />
               {
                 this.state.tags.includes(this.state.input) ?
                   <IconButton aria-label="add tag"
-                              onClick={this.submit}>
-                    <AddIcon/>
+                    onClick={this.submit}>
+                    <AddIcon />
                   </IconButton>
                   :
                   <IconButton aria-label="create new tag"
-                              onClick={this.submit}>
-                    <CreateIcon/>
+                    onClick={this.submit}>
+                    <CreateIcon />
                   </IconButton>
               }
             </Grid>
@@ -82,16 +87,16 @@ export class TagField extends React.Component<TagFieldProps, { input: string, ta
         <div>
           {
             this.props.tags?.map((name) => {
-                return <Chip key={name}
-                             size="small"
-                             label={name}
-                             onDelete={() => this.props.onDelete(name)}/>
-              }
+              return <Chip key={name}
+                size="small"
+                label={name}
+                onDelete={() => this.props.onDelete(name)} />
+            }
             )
           }
         </div>
         <Dialog open={this.state.createDialog} onClose={() => {
-          this.setState({createDialog: false})
+          this.setState({ createDialog: false })
         }}>
           <DialogTitle>Add a new Tag</DialogTitle>
           <DialogContent>
@@ -101,23 +106,23 @@ export class TagField extends React.Component<TagFieldProps, { input: string, ta
           </DialogContent>
           <DialogActions>
             <Button variant="contained"
-                    startIcon={<CancelIcon/>}
-                    onClick={() => {
-                      this.setState({createDialog: false})
-                    }}
-                    color="primary"
+              startIcon={<CancelIcon />}
+              onClick={() => {
+                this.setState({ createDialog: false })
+              }}
+              color="primary"
             />
             <Button autoFocus
-                    variant="contained"
-                    startIcon={<CreateIcon/>}
-                    onClick={() => {
-                      Tags.addToFirestore(this.state.input)
-                        .then(() => {
-                          this.props.onAdd(this.state.input);
-                          this.setState({input: "", createDialog: false})
-                        });
-                    }}
-                    color="primary"
+              variant="contained"
+              startIcon={<CreateIcon />}
+              onClick={() => {
+                Tags.addToFirestore(this.state.input)
+                  .then(() => {
+                    this.props.onAdd(this.state.input);
+                    this.setState({ input: "", createDialog: false })
+                  });
+              }}
+              color="primary"
             />
           </DialogActions>
         </Dialog>
@@ -128,9 +133,9 @@ export class TagField extends React.Component<TagFieldProps, { input: string, ta
   private async submit() {
     if (this.state.tags.includes(this.state.input)) {
       this.props.onAdd(this.state.input);
-      this.setState({input: ""});
+      this.setState({ input: "" });
     } else {
-      this.setState({createDialog: true});
+      this.setState({ createDialog: true });
     }
   }
 }

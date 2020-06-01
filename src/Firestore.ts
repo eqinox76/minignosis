@@ -11,7 +11,8 @@ export class Entry {
     public description?: string,
     public tags?: string[],
     public search?: string[],
-    public added?: firestore.Timestamp
+    public added?: firestore.Timestamp,
+    public text?: string
   ) {
   }
 
@@ -23,7 +24,8 @@ export class Entry {
       snap.get("description"),
       snap.get("tags"),
       snap.get("search"),
-      snap.get("added")
+      snap.get("added"),
+      snap.get("text")
     )
   }
 
@@ -35,7 +37,8 @@ export class Entry {
       ["description", this.description],
       ["tags", this.tags],
       // search shall not be modified by the frontend
-      ["added", this.added === undefined ? firestore.FieldValue.serverTimestamp() : this.added]
+      ["added", this.added === undefined ? firestore.FieldValue.serverTimestamp() : this.added],
+      ["text", this.text]
     ]);
     return Array.from(result).reduce((obj: any, [key, value]) => {
       // need to filter undefined values for the firestore api
