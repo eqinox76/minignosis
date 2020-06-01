@@ -102,7 +102,7 @@ class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, Re
   render() {
     this.entry = Entry.fromFirestore(this.props.doc);
     return (
-      <Grid item xs={12} md={6} lg={3} xl={2}>
+      <Grid item xs={12} sm={6} md={3} lg={2} xl={2}>
         <Card style={{ height: "100%" }}
           onClick={() => {
             if (authorized(this.context)) {
