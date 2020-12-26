@@ -1,24 +1,19 @@
-# MiniGnosis
+# minignosis
 
-Playground project for React + Firebase.
+## CLI Commands
+*   `npm install`: Installs dependencies
 
-This project aims to produce a website to collect and find knowledge. Mainly in form of links.
-It focuses on an easy way to add new links and automatic indexing.
-It will allow retrievial of those links via a search and a content tree.  
+*   `npm run dev`: Run a development, HMR server
 
-This project depends heavily on [GCP](https://cloud.google.com) services:
-* firebase hosting, auth
-* firestore
-* cloud functions
-* cloud build
+*   `npm run serve`: Run a production-like server
 
-# Development
+*   `npm run build`: Production-ready build
 
-Let webpack watch and recompile the project
-```
-npx webpack -w --progress 
-```
-In parallel a local firebase hosting server can be started:
-```
-firebase serve
-```
+*   `npm run lint`: Pass TypeScript files using TSLint
+
+*   `npm run test`: Run Jest and Enzyme with
+    [`enzyme-adapter-preact-pure`](https://github.com/preactjs/enzyme-adapter-preact-pure) for
+    your tests
+
+
+For detailed explanation on how things work, checkout the [CLI Readme](https://github.com/developit/preact-cli/blob/master/README.md).
