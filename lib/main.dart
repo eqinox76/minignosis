@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+
+import 'auth.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +29,10 @@ class FlutterFireWrapper extends StatelessWidget {
 
         // once complete, show application
         if (snapshot.connectionState == ConnectionState.done) {
-          return MyApp();
+          return ChangeNotifierProvider(
+            create: (context) => Auth(),
+            child: MyApp(),
+          );
         }
 
         // otherwise, show loading
@@ -149,6 +156,9 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            Consumer<Auth>(builder: (context, auth, child) {
+              return Text(auth.name());
+            }),
           ],
         ),
       ),
@@ -156,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
