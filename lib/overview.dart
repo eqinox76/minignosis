@@ -21,26 +21,24 @@ class Overview extends StatelessWidget {
           return Text("Loading");
         }
 
-        return new Flexible(
-          child: new ListView(
-            children: snapshot.data?.docs.map((DocumentSnapshot document) {
-                  return new ListTile(
-                      title: new Text(document.data()?['name']),
-                      subtitle: Linkify(
-                        onOpen: (link) async {
-                          if (await canLaunch(link.url)) {
-                            await launch(link.url);
-                          } else {
-                            throw 'Could not launch $link';
-                          }
-                        },
-                        text: document.data()?['url'],
-                      )
-                      // subtitle: new Text(document.data()?['url']),
-                      );
-                }).toList() ??
-                [Text('Empty')],
-          ),
+        return new ListView(
+          children: snapshot.data?.docs.map((DocumentSnapshot document) {
+                return new ListTile(
+                    title: new Text(document.data()?['name']),
+                    subtitle: Linkify(
+                      onOpen: (link) async {
+                        if (await canLaunch(link.url)) {
+                          await launch(link.url);
+                        } else {
+                          throw 'Could not launch $link';
+                        }
+                      },
+                      text: document.data()?['url'],
+                    )
+                    // subtitle: new Text(document.data()?['url']),
+                    );
+              }).toList() ??
+              [Text('Empty')],
         );
       },
     );

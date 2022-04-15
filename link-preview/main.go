@@ -4,13 +4,14 @@ package linkpreview
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"strings"
-	"encoding/json"
-	"time"
 	"regexp"
+	"strings"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
@@ -39,7 +40,7 @@ type FirestoreValue struct {
 }
 
 type MyData struct {
-	Url StringValue `json:"url"`
+	Url  StringValue `json:"url"`
 	Name StringValue `json:"name"`
 }
 
@@ -73,43 +74,49 @@ func init() {
 	}
 }
 
-func Main(ctx context.Context, e FirestoreEvent) error{
-	
+func Main(ctx context.Context, e FirestoreEvent) error {
+
 	j, _ := json.Marshal(e)
-	log.Printf(string(j))
-	
-	applyIfChanged(ctx, e, "url", AddPreview)
-	applyIfChanged(ctx, e, "name", AddSearch)
-	return nil
+	log.Print(string(j))
+
+	updates := applyIfChanged(ctx, e, "url", AddPreview)
+	updates = append(updates, applyIfChanged(ctx, e, "name", AddSearch)...)
+
+	if e.OldValue.CreateTime.IsZero() {
+		updates = append(updates, firestore.Update{
+			Path:  "added",
+			Value: time.Now(),
+		})
+	}
+	return update(ctx, e, updates)
 }
 
 // applies applyfunc if the document is new or path has changed
-func applyIfChanged(ctx context.Context,e FirestoreEvent, path string, applyfunc func(context.Context, FirestoreEvent)){
+func applyIfChanged(ctx context.Context, e FirestoreEvent, path string, applyfunc func(context.Context, FirestoreEvent) []firestore.Update) []firestore.Update {
 	var nullTime time.Time
 
 	if e.Value.CreateTime == nullTime {
 		// deletion
-		return
+		return nil
 	}
 
 	if e.OldValue.CreateTime == nullTime {
 		// new document. Check if the path exists
-		applyfunc(ctx, e)
-		return
+		return applyfunc(ctx, e)
 	}
 
 	// this was an update check if an interessting field was updated
-	for _, v := range e.UpdateMask.FieldPaths{
+	for _, v := range e.UpdateMask.FieldPaths {
 		if v == path {
-			applyfunc(ctx, e)
-			return
+			return applyfunc(ctx, e)
 		}
 	}
+	return nil
 }
 
 // AddPreview is triggered by a change to a Firestore document. It updates
 // the `original` value of the document to upper case.
-func AddPreview(ctx context.Context, e FirestoreEvent) {
+func AddPreview(ctx context.Context, e FirestoreEvent) []firestore.Update {
 	url := e.Value.Fields.Url.Str
 
 	resp, err := http.Get(url)
@@ -125,27 +132,24 @@ func AddPreview(ctx context.Context, e FirestoreEvent) {
 		log.Fatalf("info.Parse: %v", err)
 	}
 
-	data := []firestore.Update{
+	return []firestore.Update{
 		{Path: "name", Value: info.Title},
 		{Path: "description", Value: info.Description},
 		{Path: "imageUrl", Value: extractImage(info)},
 	}
-	update(ctx, e, data)
 }
 
-
-func AddSearch(ctx context.Context, e FirestoreEvent) {
+func AddSearch(ctx context.Context, e FirestoreEvent) []firestore.Update {
 	var sanitized []string
-	for _, elem := range wordsRE.FindAllString(e.Value.Fields.Name.Str, -1){
+	for _, elem := range wordsRE.FindAllString(e.Value.Fields.Name.Str, -1) {
 		if len(elem) >= 3 {
 			sanitized = append(sanitized, strings.ToLower(elem))
 		}
 	}
 
-	data := []firestore.Update{
+	return []firestore.Update{
 		{Path: "search", Value: sanitized},
 	}
-	update(ctx, e, data)
 }
 
 func extractImage(info *htmlinfo.HTMLInfo) string {
@@ -169,7 +173,7 @@ func extractImage(info *htmlinfo.HTMLInfo) string {
 	return ""
 }
 
-func update (ctx context.Context, e FirestoreEvent, data []firestore.Update){
+func update(ctx context.Context, e FirestoreEvent, data []firestore.Update) error {
 	fullPath := strings.Split(e.Value.Name, "/documents/")[1]
 	pathParts := strings.Split(fullPath, "/")
 	collection := pathParts[0]
@@ -178,6 +182,7 @@ func update (ctx context.Context, e FirestoreEvent, data []firestore.Update){
 	_, err := client.Collection(collection).Doc(doc).Update(ctx, data)
 
 	if err != nil {
-		log.Fatalf("client.Collection: %v", err)
+		return fmt.Errorf("client.Collection: %v", err)
 	}
+	return nil
 }
