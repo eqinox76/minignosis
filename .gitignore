@@ -1,24 +1,4 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
-.firebaserc
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# npm
 /node_modules/
+/dist/main.js*
 
-# packaged by webpack
-/dist/*.js
-/dist/*.js.map
+.DS_Store

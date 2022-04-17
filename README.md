@@ -1,24 +1,43 @@
-# MiniGnosis
+*Psst �looking for a more complete solution? Check out [SvelteKit](https://kit.svelte.dev), the official framework for building web applications of all sizes, with a beautiful development experience and flexible filesystem-based routing.*
 
-Playground project for React + Firebase.
+*Looking for a shareable component template instead? You can [use SvelteKit for that as well](https://kit.svelte.dev/docs#packaging) or the older [sveltejs/component-template](https://github.com/sveltejs/component-template)*
 
-This project aims to produce a website to collect and find knowledge. Mainly in form of links.
-It focuses on an easy way to add new links and automatic indexing.
-It will allow retrievial of those links via a search and a content tree.  
+---
 
-This project depends heavily on [GCP](https://cloud.google.com) services:
-* firebase hosting, auth
-* firestore
-* cloud functions
-* cloud build
+## Get started
 
-# Development
+Install the dependencies...
 
-Let webpack watch and recompile the project
+```bash
+npm install
 ```
-npx webpack -w --progress 
+
+...then start [Rollup](https://rollupjs.org):
+
+```bash
+npm run dev
 ```
-In parallel a local firebase hosting server can be started:
+
+
+If you're using [Visual Studio Code](https://code.visualstudio.com/) we recommend installing the official extension [Svelte for VS Code](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode). If you are using other editors you may need to install a plugin in order to get syntax highlighting and intellisense.
+
+## Building and running in production mode
+
+To create an optimised version of the app:
+
+```bash
+npm run build
 ```
-firebase serve
+
+You can run the newly built app with `npm run start`. This uses [sirv](https://github.com/lukeed/sirv), which is included in your package.json's `dependencies` so that the app will work when you deploy to platforms like [Heroku](https://heroku.com).
+
+
+## Single-page app mode
+
+By default, sirv will only respond to requests that match files in `public`. This is to maximise compatibility with static fileservers, allowing you to deploy your app anywhere.
+
+If you're building a single-page app (SPA) with multiple routes, sirv needs to be able to respond to requests for *any* path. You can make it so by editing the `"start"` command in package.json:
+
+```js
+"start": "sirv public --single"
 ```
