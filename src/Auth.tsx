@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext } from "react";
-import PersonIcon from "@material-ui/icons/Person";
-import { IconButton, Tooltip, Avatar } from "@material-ui/core";
+import PersonIcon from "@mui/icons-material/Person";
+import { IconButton, Tooltip, Avatar } from "@mui/material";
 import { getAuth, GoogleAuthProvider, signInWithPopup, User } from "firebase/auth";
 
 class UserInfo {

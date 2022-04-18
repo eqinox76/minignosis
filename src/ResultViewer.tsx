@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { Chip, List, ListItem, ListItemText } from "@material-ui/core";
-import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
-import Grid from "@material-ui/core/Grid";
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Typography from '@material-ui/core/Typography';
+import { Chip, IconButton, List, ListItem, ListItemText } from "@mui/material";
+import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
+import EditIcon from '@mui/icons-material/Edit';
+import CachedIcon from '@mui/icons-material/Cached';
+import Grid from "@mui/material/Grid";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
 import { Entry } from "./Firestore";
 import { useNavigate } from "react-router-dom";
 import * as _ from "lodash";
@@ -74,7 +76,9 @@ export class ResultViewer extends Component<ResultViewerProps, ResultViewerState
           </ListItem>
         </List>)
       : (
-        <Grid container spacing={4}>
+        <Grid container
+          spacing={2}
+          xs={12}>
           {this.state.entries.map((e) => {
             return <ResultItem doc={e} key={e.id} />
           })}
@@ -87,41 +91,36 @@ class ResultItemProp {
   public doc: QueryDocumentSnapshot
 }
 
-class ResultItemState {
+const ResultItem: React.FunctionComponent<ResultItemProp> = (props) => {
 
-}
-
-class ResultItem extends Component<ResultItemProp, ResultItemState> {
-  static contextType = UserContext
-  private entry: Entry;
-
-  render() {
-    this.entry = Entry.fromFirestore(this.props.doc);
-    return (
-      <Grid item xs={12} sm={6} md={3} lg={2} xl={2}>
-        <Card style={{ height: "100%" }}
-          onClick={() => {
-            if (authorized) {
+  const entry = Entry.fromFirestore(props.doc);
+  return (
+    <Grid item xs={12} sm={6} md={3} lg={2} xl={2}>
+      <Card style={{ height: "100%" }}>
+        <CardMedia component="img"
+          image={entry.imageUrl}
+        />
+        <CardContent>
+          <Typography variant="body2" color="textSecondary" component="p">
+            {entry.name ?? entry.url}
+          </Typography>
+          <ul>
+            {entry.tags?.map((tag: string) => <Chip key={tag} size="small" label={tag} />)}
+          </ul>
+          <a href={entry.url}>
+            <LinkOutlinedIcon />
+          </a>
+          {authorized && <IconButton >
+            <EditIcon onClick={() => {
               let navigate = useNavigate();
-              navigate("/edit/" + this.props.doc.id);
-            }
-          }}>
-          <CardMedia component="img"
-            image={this.entry.imageUrl}
-          />
-          <CardContent>
-            <Typography variant="body2" color="textSecondary" component="p">
-              {this.entry.name ?? this.entry.url}
-            </Typography>
-            <ul>
-              {this.entry.tags?.map((tag: string) => <Chip key={tag} size="small" label={tag} />)}
-            </ul>
-            <a href={this.entry.url}>
-              <LinkOutlinedIcon />
-            </a>
-          </CardContent>
-        </Card>
-      </Grid>
-    )
-  }
+              navigate("/edit/" + props.doc.id);
+            }} />
+          </IconButton>}
+          {authorized && <IconButton>
+            <CachedIcon />
+          </IconButton>}
+        </CardContent>
+      </Card>
+    </Grid >
+  )
 }

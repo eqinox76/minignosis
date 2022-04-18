@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Autocomplete,
   Button,
   Chip,
   Dialog,
@@ -10,12 +11,11 @@ import {
   IconButton,
   TextField,
   Typography
-} from "@material-ui/core";
-import CancelIcon from '@material-ui/icons/Cancel';
+} from "@mui/material";
+import CancelIcon from '@mui/icons-material/Cancel';
 import { Tags } from "./Firestore";
-import AddIcon from '@material-ui/icons/Add';
-import CreateIcon from '@material-ui/icons/Create';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import AddIcon from '@mui/icons-material/Add';
+import CreateIcon from '@mui/icons-material/Create';
 
 class TagFieldProps {
   tags: string[];

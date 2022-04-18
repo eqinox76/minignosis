@@ -1,9 +1,9 @@
 import React from "react";
-import { AppBar, Grid, IconButton, TextField, Toolbar, Typography } from "@material-ui/core";
-import HomeIcon from "@material-ui/icons/Home";
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import SaveIcon from '@material-ui/icons/Save';
-import Fab from '@material-ui/core/Fab';
+import { AppBar, Grid, IconButton, TextField, Toolbar, Typography } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import SaveIcon from '@mui/icons-material/Save';
+import Fab from '@mui/material/Fab';
 import { Entry } from "./Firestore";
 import { TagField } from "./TagField";
 import { AuthButton } from './Auth';

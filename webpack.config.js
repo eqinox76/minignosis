@@ -1,10 +1,10 @@
 const path = require('path');
 
 module.exports = {
-    mode: "production",
+    mode: "development",
 
     // Enable sourcemaps for debugging webpack's output.
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
 
     devServer: {
         client: {

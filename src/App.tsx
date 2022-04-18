@@ -1,7 +1,7 @@
 import React, { FunctionComponent, ReactElement, useEffect, useState } from 'react';
-import { AppBar, IconButton, TextField, Toolbar, Typography } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import HomeIcon from '@material-ui/icons/Home';
+import { AppBar, IconButton, TextField, Toolbar, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import HomeIcon from '@mui/icons-material/Home';
 import { ResultViewer } from './ResultViewer';
 import { AddField } from './AddField';
 import EditScreen from './EditScreen';
@@ -64,11 +64,11 @@ export const App: FunctionComponent<{}> = ({ }: ReactElement) => {
             <Route path="/edit/:id" element={<EditScreen />} />
             <Route path="/add/:url" element={<Adder />} />
             <Route path="/" element={
-              <div>
-                <AppBar position="static">
+              <>
+                <AppBar position="static" style={{ marginBottom: 12 }}>
                   <Grid container
                     direction="row"
-                    justify="space-between"
+                    justifyContent="space-between"
                   >
                     <Toolbar>
                       <Grid item>
@@ -99,9 +99,10 @@ export const App: FunctionComponent<{}> = ({ }: ReactElement) => {
                 </AppBar>
                 <ResultViewer search={search} />
                 <AddField />
-              </div>} />
+              </>
+            } />
           </Routes>
         </Router>
       </UserProvider>
-    </ErrorBoundary>);
+    </ErrorBoundary >);
 }
