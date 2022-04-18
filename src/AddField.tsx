@@ -1,9 +1,9 @@
-import React, { Component, useContext } from "react";
+import React, { Component } from "react";
 import { TextField } from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -28,12 +28,12 @@ export class AddField extends Component<{}, State> {
 
   render() {
     if (this.state != null && this.state.url !== undefined) {
-      return <Redirect to={'/add/' + this.state.url} />
+      return <Navigate to={'/add/' + this.state.url} />
     }
     return (
       <div>
         <Fab color="primary"
-          disabled={!authorized(this.context)}
+          disabled={!authorized}
           style={{
             margin: 0,
             top: 'auto',
@@ -50,7 +50,7 @@ export class AddField extends Component<{}, State> {
           <DialogContent>
             <DialogContentText>
               Please urls article to be added.
-        </DialogContentText>
+            </DialogContentText>
             <TextField
               autoFocus
               margin="dense"
@@ -62,10 +62,10 @@ export class AddField extends Component<{}, State> {
           <DialogActions>
             <Button onClick={() => { this.setState({ expanded: false }) }} color="primary">
               Cancel
-        </Button>
+            </Button>
             <Button onClick={this.submitted} color="primary">
               Add
-        </Button>
+            </Button>
           </DialogActions>
         </Dialog>
       </div >

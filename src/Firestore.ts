@@ -1,6 +1,7 @@
-import { firestore } from "firebase";
-
-export const EntryCollection = firestore().collection("entries");
+import {
+  getFirestore, Timestamp, QueryDocumentSnapshot,
+  DocumentSnapshot, serverTimestamp, getDoc, doc, updateDoc
+} from "firebase/firestore";
 
 // TODO find generic way of transforming data object to and from firestore
 export class Entry {
@@ -11,12 +12,12 @@ export class Entry {
     public description?: string,
     public tags?: string[],
     public search?: string[],
-    public added?: firestore.Timestamp,
+    public added?: Timestamp,
     public text?: string
   ) {
   }
 
-  static fromFirestore(snap: firestore.QueryDocumentSnapshot | firestore.DocumentSnapshot): Entry {
+  static fromFirestore(snap: QueryDocumentSnapshot | DocumentSnapshot): Entry {
     return new Entry(
       snap.get("url"),
       snap.get("name"),
@@ -37,7 +38,7 @@ export class Entry {
       ["description", this.description],
       ["tags", this.tags],
       // search shall not be modified by the frontend
-      ["added", this.added === undefined ? firestore.FieldValue.serverTimestamp() : this.added],
+      ["added", this.added === undefined ? serverTimestamp() : this.added],
       ["text", this.text]
     ]);
     return Array.from(result).reduce((obj: any, [key, value]) => {
@@ -52,10 +53,8 @@ export class Entry {
 
 export class Tags {
   static async fromFirestore(): Promise<string[]> {
-    return firestore().collection("meta")
-      .doc("meta")
-      .get()
-      .then((doc) => doc.get("tags") ?? [])
+    return getDoc(doc(getFirestore(), "meta", "meta"))
+      .then(doc => doc.get("tags") ?? [])
   }
 
   static async addToFirestore(newTag: string) {
@@ -63,9 +62,10 @@ export class Tags {
       .then((tags) => {
         tags.push(newTag);
         tags.sort((a: string, b: string) => a.localeCompare(b));
-        firestore().collection("meta")
-          .doc("meta")
-          .update("tags", tags);
+        updateDoc(
+          doc(getFirestore(), "meta", "meta"),
+          { "tags": tags },
+        )
       })
   }
 }

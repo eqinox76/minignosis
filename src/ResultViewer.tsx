@@ -1,4 +1,4 @@
-import React, { Component, useContext } from "react";
+import React, { Component } from "react";
 import { Chip, List, ListItem, ListItemText } from "@material-ui/core";
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
 import Grid from "@material-ui/core/Grid";
@@ -6,15 +6,15 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
-import { firestore } from "firebase";
 import { Entry } from "./Firestore";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as _ from "lodash";
 import { UserContext, authorized } from "./Auth";
+import { collection, getFirestore, limit, onSnapshot, orderBy, query, where, QueryDocumentSnapshot } from "firebase/firestore";
 
 class ResultViewerState {
   constructor(
-    public entries: Array<firestore.QueryDocumentSnapshot> = [],
+    public entries: Array<QueryDocumentSnapshot> = [],
     public lastSearchTerm: String,
   ) {
   }
@@ -41,25 +41,22 @@ export class ResultViewer extends Component<ResultViewerProps, ResultViewerState
       return
     }
 
-    let request = firestore()
-      .collection("entries")
-      .limit(50)
-      .orderBy("added", "desc")
+    let constrains = [orderBy("added", "desc"), limit(50)]
 
     if (this.props.search.length != 0) {
       let searchTerms = this.props.search.match(/\w+/g).map((token: String) => {
         return token.toLowerCase()
       })
 
-      request = request.where('search', 'array-contains-any', searchTerms)
+      constrains.push(where('search', 'array-contains-any', searchTerms))
     }
 
-    request.onSnapshot(snap => {
+    onSnapshot(query(collection(getFirestore(), "entries"), ...constrains), (snap: any) => {
       var docs = snap.docs;
       if (this.props.search.length > 0) {
         let tokens = this.props.search.match(/\w+/g)
         // stable sorting
-        docs = _.sortBy(snap.docs, (d: firestore.QueryDocumentSnapshot) => {
+        docs = _.sortBy(snap.docs, (d: QueryDocumentSnapshot) => {
           let entry = Entry.fromFirestore(d)
           return entry.search.filter(element => tokens.includes(element)).length
         }).reverse()
@@ -69,33 +66,32 @@ export class ResultViewer extends Component<ResultViewerProps, ResultViewerState
   }
 
   render() {
-    if (this.state === null) {
-      return (
+    return this.state === null ?
+      (
         <List component="nav">
           <ListItem button key={4}>
             <ListItemText primary="Loading..." />
           </ListItem>
-        </List>);
-    }
-    return (
-      <Grid container spacing={4}>
-        {this.state.entries.map((e) => {
-          return <ResultItemWithRouter doc={e} key={e.id} />
-        })}
-      </Grid>
-    );
+        </List>)
+      : (
+        <Grid container spacing={4}>
+          {this.state.entries.map((e) => {
+            return <ResultItem doc={e} key={e.id} />
+          })}
+        </Grid>
+      );
   }
 }
 
 class ResultItemProp {
-  public doc: firestore.QueryDocumentSnapshot
+  public doc: QueryDocumentSnapshot
 }
 
 class ResultItemState {
 
 }
 
-class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, ResultItemState> {
+class ResultItem extends Component<ResultItemProp, ResultItemState> {
   static contextType = UserContext
   private entry: Entry;
 
@@ -105,8 +101,9 @@ class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, Re
       <Grid item xs={12} sm={6} md={3} lg={2} xl={2}>
         <Card style={{ height: "100%" }}
           onClick={() => {
-            if (authorized(this.context)) {
-              this.props.history.push("/edit/" + this.props.doc.id)
+            if (authorized) {
+              let navigate = useNavigate();
+              navigate("/edit/" + this.props.doc.id);
             }
           }}>
           <CardMedia component="img"
@@ -128,5 +125,3 @@ class ResultItem extends Component<RouteComponentProps<any> & ResultItemProp, Re
     )
   }
 }
-
-const ResultItemWithRouter = withRouter(ResultItem);

@@ -1,23 +1,24 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useContext } from "react";
 import PersonIcon from "@material-ui/icons/Person";
 import { IconButton, Tooltip, Avatar } from "@material-ui/core";
-import { auth } from "firebase";
-import firebase from "firebase";
+import { getAuth, GoogleAuthProvider, signInWithPopup, User } from "firebase/auth";
 
 class UserInfo {
-    user: firebase.User
+    user: User
+    authorized: boolean
 }
 
-export const UserContext = createContext<UserInfo>({ user: null });
+export const UserContext = createContext<UserInfo>({ user: null, authorized: false });
 
 let authRegistered = false;
+const provider = new GoogleAuthProvider();
 
 function UserProvider(props: { children: React.ReactNode; }) {
-    const [user, setUser] = useState<firebase.User>()
+    const [user, setUser] = useState<User>()
 
     if (!authRegistered) {
         authRegistered = true;
-        auth().onAuthStateChanged(userAuth => {
+        getAuth().onAuthStateChanged(userAuth => {
             if (userAuth === null) {
                 console.log("logged out")
             } else {
@@ -28,7 +29,7 @@ function UserProvider(props: { children: React.ReactNode; }) {
     }
 
     return (
-        <UserContext.Provider value={{ user: user }}>
+        <UserContext.Provider value={{ user: user, authorized: user !== null }}>
             {props.children}
         </UserContext.Provider>
     );
@@ -45,8 +46,7 @@ export function AuthButton() {
             <Tooltip title="Sign In">
                 <IconButton
                     onClick={() => {
-                        let provider = new auth.GoogleAuthProvider();
-                        auth().signInWithPopup(provider);
+                        signInWithPopup(getAuth(), provider);
                     }}>
                     <PersonIcon />
                 </IconButton>
@@ -57,7 +57,7 @@ export function AuthButton() {
         <Tooltip title="Sign Out">
             <Avatar src={user.user.photoURL}
                 onClick={() => {
-                    firebase.auth().signOut().catch(function (error) {
+                    getAuth().signOut().catch(function (error) {
                         console.log(error);
                     });
                 }} />

@@ -16,7 +16,7 @@ This project depends heavily on [GCP](https://cloud.google.com) services:
 
 Let webpack watch and recompile the project
 ```
-npx webpack -w --progress 
+npm start
 ```
 In parallel a local firebase hosting server can be started:
 ```

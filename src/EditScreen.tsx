@@ -1,51 +1,49 @@
 import React from "react";
-import { RouteComponentProps } from 'react-router-dom';
 import { AppBar, Grid, IconButton, TextField, Toolbar, Typography } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import SaveIcon from '@material-ui/icons/Save';
 import Fab from '@material-ui/core/Fab';
-import { Entry, EntryCollection } from "./Firestore";
-import { firestore } from "firebase";
+import { Entry } from "./Firestore";
 import { TagField } from "./TagField";
 import { AuthButton } from './Auth';
+import { useNavigate, useParams } from "react-router-dom";
+import { collection, deleteDoc, doc, DocumentReference, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 
 class State {
   doc: Entry;
-  ref: firestore.DocumentReference;
+  ref: DocumentReference;
   changed: boolean = false;
 }
 
-export default class EditScreen extends React.Component<RouteComponentProps<any>, State> {
+export default class EditScreen extends React.Component<Readonly<any>, State> {
   constructor(props: any) {
     super(props);
 
+    const { id } = useParams();
     // start loading data
-    const ref = EntryCollection.doc(this.props.match.params.id)
-    ref.get()
-      .then((e) => this.setState({ doc: Entry.fromFirestore(e), ref: ref }))
-
-    this.save = this.save.bind(this)
+    const ref = doc(collection(getFirestore(), "entries"), id)
+    getDoc(ref).then((e) => this.setState({ doc: Entry.fromFirestore(e), ref: ref }))
   }
 
-  save() {
+  save = async () => {
     if (!this.state.changed) {
       return
     }
 
-    this.state.ref
-      .set(this.state.doc.toFirestore())
-      .then(() => this.setState({ changed: false }))
+    await setDoc(this.state.ref, this.state.doc.toFirestore())
+    this.setState({ changed: false })
   }
 
   render() {
+    const navigate = useNavigate()
     if (this.state == null) {
       return <div>
         <AppBar position="static">
           <Toolbar>
             <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => {
-              this.props.history.push("/");
+              navigate("/");
             }}>
               <HomeIcon />
             </IconButton>
@@ -64,7 +62,7 @@ export default class EditScreen extends React.Component<RouteComponentProps<any>
         <AppBar position="static">
           <Toolbar>
             <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => {
-              this.props.history.push("/");
+              navigate("/");
             }}>
               <HomeIcon />
             </IconButton>
@@ -117,10 +115,9 @@ export default class EditScreen extends React.Component<RouteComponentProps<any>
         <Fab onClick={this.save} disabled={!this.state.changed}>
           <SaveIcon />
         </Fab>
-        <Fab onClick={() => {
-          EntryCollection.doc(this.props.match.params.id).delete().then(() => {
-            this.props.history.push("/")
-          })
+        <Fab onClick={async () => {
+          await deleteDoc(doc(collection(getFirestore(), "entries"), this.props.match.params.id))
+          navigate("/");
         }}>
           <DeleteForeverIcon />
         </Fab>

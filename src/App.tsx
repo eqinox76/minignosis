@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
+import React, { FunctionComponent, ReactElement, useEffect, useState } from 'react';
 import { AppBar, IconButton, TextField, Toolbar, Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import HomeIcon from '@material-ui/icons/Home';
 import { ResultViewer } from './ResultViewer';
 import { AddField } from './AddField';
 import EditScreen from './EditScreen';
-import { BrowserRouter as Router, Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { Entry, EntryCollection } from "./Firestore";
+import { BrowserRouter as Router, Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import { Entry } from "./Firestore";
 import UserProvider, { AuthButton } from './Auth';
+import { addDoc, collection, getDocs, getFirestore, limit, query, where } from 'firebase/firestore';
+import { ErrorBoundary } from './ErrorBoundary';
 
-class Adder extends React.Component<RouteComponentProps<any>> {
-  componentDidMount(): void {
-    let decoded = decodeURIComponent(this.props.match.params.url);
+class Adder extends React.Component<any> {
+  async componentDidMount(): Promise<void> {
+    let { url } = useParams();
+
+    let decoded = decodeURIComponent(url);
     if (!decoded.includes("http")) {
       decoded = "https://" + decoded
     }
     const entry = new Entry(decoded);
-    EntryCollection.where("url", "==", entry.url).limit(1).get().then(
-      result => {
-        if (result.empty) {
-          EntryCollection
-            .add(entry.toFirestore())
-            .then(doc => this.props.history.push("/edit/" + doc.id))
-        } else {
-          this.props.history.push("/edit/" + result.docs[0].id)
-        }
-      }
-    )
+    const result = await getDocs(query(collection(getFirestore(), "entries"), where("url", "==", entry.url), limit(1)))
+    const navigate = useNavigate();
+    if (result.empty) {
+      const doc = await addDoc(collection(getFirestore(), "entries"), entry.toFirestore())
+      navigate("/edit/" + doc.id)
+    } else {
+      navigate("/edit/" + result.docs[0].id)
+    }
   }
 
   render() {
@@ -51,56 +52,56 @@ class Adder extends React.Component<RouteComponentProps<any>> {
   }
 }
 
-export function App() {
-
+export const App: FunctionComponent<{}> = ({ }: ReactElement) => {
   let searchTerm = ""
   const [search, setSearch] = useState("")
 
   return (
-    <UserProvider>
-      <Router>
-        <Switch>
-          <Route path="/edit/:id" component={EditScreen} />
-          <Route path="/add/:url" component={Adder} />
-          <Route path="/">
-            <div>
-              <AppBar position="static">
-                <Grid container
-                  direction="row"
-                  justify="space-between"
-                >
-                  <Toolbar>
-                    <Grid item>
-                      <IconButton edge="start" color="inherit" aria-label="menu">
-                        <HomeIcon />
-                      </IconButton>
-                    </Grid>
-                    <Grid item xs={10}>
-                      <TextField
-                        fullWidth
-                        id="outlined-basic"
-                        label="Search"
-                        variant="outlined"
-                        onChange={(e) => { searchTerm = e.target.value }}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") {
-                            setSearch(searchTerm);
+    <ErrorBoundary>
+      <UserProvider>
+        <Router>
+          <Routes>
+            <Route path="/edit/:id" element={<EditScreen />} />
+            <Route path="/add/:url" element={<Adder />} />
+            <Route path="/" element={
+              <div>
+                <AppBar position="static">
+                  <Grid container
+                    direction="row"
+                    justify="space-between"
+                  >
+                    <Toolbar>
+                      <Grid item>
+                        <IconButton edge="start" color="inherit" aria-label="menu">
+                          <HomeIcon />
+                        </IconButton>
+                      </Grid>
+                      <Grid item xs={10}>
+                        <TextField
+                          fullWidth
+                          id="outlined-basic"
+                          label="Search"
+                          variant="outlined"
+                          onChange={(e) => { searchTerm = e.target.value }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                              setSearch(searchTerm);
+                            }
                           }
-                        }
-                        }
-                      />
-                    </Grid>
-                    <Grid item>
-                      <AuthButton />
-                    </Grid>
-                  </Toolbar>
-                </Grid>
-              </AppBar>
-              <ResultViewer search={search} />
-              <AddField />
-            </div>
-          </Route>
-        </Switch>
-      </Router>
-    </UserProvider>);
+                          }
+                        />
+                      </Grid>
+                      <Grid item>
+                        <AuthButton />
+                      </Grid>
+                    </Toolbar>
+                  </Grid>
+                </AppBar>
+                <ResultViewer search={search} />
+                <AddField />
+              </div>} />
+          </Routes>
+        </Router>
+      </UserProvider>
+    </ErrorBoundary>);
 }
